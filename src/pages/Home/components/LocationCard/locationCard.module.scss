@@ -1,0 +1,154 @@
+.container{
+  // border: 2px solid red;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  // column-gap: 15px;
+}
+
+.listPersonsLocations {
+  border-right: 1px solid #dedede;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  max-height: calc(100vh - 220px);
+  padding:15px;
+  overflow-y: scroll;
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+.person {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  cursor: pointer;
+  height: 100px;
+  -webkit-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);
+
+  img {
+    width: 70px;
+    height: 70px;
+    border: 2px solid #dedede;
+    object-fit: cover;
+    margin: 0 10px;
+  }
+
+  & + div {
+    margin-top: 10px;
+  }
+}
+.personIsSelect{
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  cursor: pointer;
+  height: 100px;
+  -webkit-box-shadow: 0px 0px 5px -1px rgba(0,188,212,1);
+  -moz-box-shadow: 0px 0px 5px -1px rgba(0,188,212,1);
+  box-shadow: 0px 0px 5px -1px rgba(0,188,212,1);
+
+  img {
+    width: 70px;
+    height: 70px;
+    border: 2px solid #dedede;
+    object-fit: cover;
+    margin: 0 10px;
+  }
+  & + div {
+    margin-top: 10px;
+  }
+}
+
+.personData {
+  // border: 2px solid red;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px;
+
+  p {
+   margin: 0;
+  }
+}
+
+.listCreateEpisode {
+  border-left: 1px solid #dedede;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 15px;
+  // max-height: calc(100vh - 220px);
+  padding:15px;
+  overflow-y: scroll;
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.boxAdd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  -webkit-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);
+
+  img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 5px;
+  }
+}
+
+.footer{
+  width: 100%;
+
+  button{
+    width: 100%;
+    border-radius: 4px;
+  }
+}
+
+.cardAdd {
+  border: 1px solid #dedede;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 4px;
+  position: relative;
+
+  button {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    top: -10px;
+    right: -10px;
+    border-radius: 50%;
+    border: none;
+    background: #dedede;
+    outline: none;
+    transition: all 0.2s;
+
+    &:hover{
+      background: #ef9a9a;
+      color: #fff;
+      transform: scale(1.1);
+    }
+  }
+}

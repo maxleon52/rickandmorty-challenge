@@ -5,10 +5,10 @@ import { useQuery } from '@apollo/client';
 import { Button } from 'antd';
 import styles from './home.module.scss';
 
-import skyImage from '../../assets/images/sky.png';
 import sadImage from '../../assets/icons/sad.svg';
 import { GET_PERSONS, GET_LOCATIONS } from './querys';
 import PersonCard from './components/PersonCard';
+import LocationCard from './components/LocationCard';
 
 interface Location {
   id: string;
@@ -76,37 +76,37 @@ function Home() {
     },
     [listPersons],
   );
-  // function handleIsSelected(person: Person) {
-  //   console.log('Chamou!');
-  //   if (person.isSelected === true) {
-  //     const newArraPersons = listPersons.map(item =>
-  //       item.id === person.id ? { ...item, isSelected: false } : item,
+
+  const handleIsSelectedLocation = useCallback(
+    (location: Location) => {
+      if (location.isSelected === true) {
+        const newArraLocations = listLocations.map(item =>
+          item.id === location.id ? { ...item, isSelected: false } : item,
+        );
+        setListLocations(newArraLocations);
+      } else {
+        const newArraLocations = listLocations.map(item =>
+          item.id === location.id ? { ...item, isSelected: true } : item,
+        );
+        setListLocations(newArraLocations);
+      }
+    },
+    [listLocations],
+  );
+
+  // function handleIsSelectedLocation(location: Location) {
+  //   if (location.isSelected === true) {
+  //     const newArraLocations = listLocations.map(item =>
+  //       item.id === location.id ? { ...item, isSelected: false } : item,
   //     );
-  //     setListPersons(newArraPersons);
+  //     setListLocations(newArraLocations);
   //   } else {
-  //     const newArraPersons = listPersons.map(item =>
-  //       item.id === person.id ? { ...item, isSelected: true } : item,
+  //     const newArraLocations = listLocations.map(item =>
+  //       item.id === location.id ? { ...item, isSelected: true } : item,
   //     );
-  //     setListPersons(newArraPersons);
+  //     setListLocations(newArraLocations);
   //   }
   // }
-  function handleIsSelectedLocation(location: Location) {
-    if (location.isSelected === true) {
-      const newArraLocations = listLocations.map(item =>
-        item.id === location.id ? { ...item, isSelected: false } : item,
-      );
-      setListLocations(newArraLocations);
-    } else {
-      const newArraLocations = listLocations.map(item =>
-        item.id === location.id ? { ...item, isSelected: true } : item,
-      );
-      setListLocations(newArraLocations);
-    }
-  }
-
-  useEffect(() => {
-    console.log('listPersons aqui: ', listPersons);
-  }, [listPersons]);
 
   return (
     <div className={styles.container}>
@@ -126,21 +126,12 @@ function Home() {
         </section>
         <section>
           {listLocations.map(location => (
-            <div
-              key={location.id}
-              className={
-                location.isSelected === true
-                  ? styles.personIsSelect
-                  : styles.person
-              }
+            <LocationCard
+              name={location.name}
+              dimension={location.dimension}
+              isSelected={location.isSelected}
               onClick={() => handleIsSelectedLocation(location)}
-            >
-              <img src={skyImage} alt={location.name} />
-              <div className={styles.locationData}>
-                <p>{location.name}</p>
-                <p>{location.dimension}</p>
-              </div>
-            </div>
+            />
           ))}
         </section>
       </div>
