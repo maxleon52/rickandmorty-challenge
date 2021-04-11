@@ -1,12 +1,14 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useEffect, useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useQuery } from '@apollo/client';
 import { Button } from 'antd';
 import styles from './home.module.scss';
 
 import skyImage from '../../assets/images/sky.png';
 import sadImage from '../../assets/icons/sad.svg';
+import { GET_PERSONS, GET_LOCATIONS } from './querys';
+import PersonCard from './components/PersonCard';
 
 interface Location {
   id: string;
@@ -23,30 +25,7 @@ interface Person {
   isSelected: boolean;
 }
 const listAdds = true;
-const GET_LOCATIONS = gql`
-  query {
-    locations {
-      results {
-        id
-        name
-        dimension
-      }
-    }
-  }
-`;
-const GET_PERSONS = gql`
-  query {
-    characters {
-      results {
-        id
-        name
-        image
-        species
-        gender
-      }
-    }
-  }
-`;
+
 function Home() {
   const [listPersons, setListPersons] = useState<Person[]>([]);
   const [listLocations, setListLocations] = useState<Location[]>([]);
@@ -81,19 +60,36 @@ function Home() {
     }
   }, [dataLocations]);
 
-  function handleIsSelected(person: Person) {
-    if (person.isSelected === true) {
-      const newArraPersons = listPersons.map(item =>
-        item.id === person.id ? { ...item, isSelected: false } : item,
-      );
-      setListPersons(newArraPersons);
-    } else {
-      const newArraPersons = listPersons.map(item =>
-        item.id === person.id ? { ...item, isSelected: true } : item,
-      );
-      setListPersons(newArraPersons);
-    }
-  }
+  const handleIsSelected = useCallback(
+    (person: Person) => {
+      if (person.isSelected === true) {
+        const newArraPersons = listPersons.map(item =>
+          item.id === person.id ? { ...item, isSelected: false } : item,
+        );
+        setListPersons(newArraPersons);
+      } else {
+        const newArraPersons = listPersons.map(item =>
+          item.id === person.id ? { ...item, isSelected: true } : item,
+        );
+        setListPersons(newArraPersons);
+      }
+    },
+    [listPersons],
+  );
+  // function handleIsSelected(person: Person) {
+  //   console.log('Chamou!');
+  //   if (person.isSelected === true) {
+  //     const newArraPersons = listPersons.map(item =>
+  //       item.id === person.id ? { ...item, isSelected: false } : item,
+  //     );
+  //     setListPersons(newArraPersons);
+  //   } else {
+  //     const newArraPersons = listPersons.map(item =>
+  //       item.id === person.id ? { ...item, isSelected: true } : item,
+  //     );
+  //     setListPersons(newArraPersons);
+  //   }
+  // }
   function handleIsSelectedLocation(location: Location) {
     if (location.isSelected === true) {
       const newArraLocations = listLocations.map(item =>
@@ -117,22 +113,15 @@ function Home() {
       <div className={styles.listPersonsLocations}>
         <section>
           {listPersons.map(person => (
-            <div
+            <PersonCard
               key={person.id}
-              className={
-                person.isSelected === true
-                  ? styles.personIsSelect
-                  : styles.person
-              }
+              name={person.name}
+              gender={person.gender}
+              image={person.image}
+              species={person.species}
+              isSelected={person.isSelected}
               onClick={() => handleIsSelected(person)}
-            >
-              <img src={person.image} alt={person.name} />
-              <div className={styles.personData}>
-                <p>{person.name}</p>
-                <p>{person.species}</p>
-                <p>{person.gender}</p>
-              </div>
-            </div>
+            />
           ))}
         </section>
         <section>
