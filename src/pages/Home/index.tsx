@@ -1,9 +1,12 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useCallback, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
+
+import skyImage from '../../assets/images/sky.png';
 
 import styles from './home.module.scss';
 
@@ -16,9 +19,14 @@ import {
   addPersonToCreateEpisode,
   removePersonToCreateEpisode,
 } from '../../store/modules/addEpisode/actions';
+import {
+  addLocationToCreateEpisode,
+  removeLocationToCreateEpisode,
+} from '../../store/modules/addLocation/actions';
 
 import { IState } from '../../store';
 import { IPerson } from '../../store/modules/addEpisode/types';
+import { ILocation } from '../../store/modules/addLocation/types';
 
 interface Location {
   id: string;
@@ -36,12 +44,16 @@ interface Person {
 }
 
 function Home() {
+  const history = useHistory();
   const [listPersons, setListPersons] = useState<Person[]>([]);
   const [listLocations, setListLocations] = useState<Location[]>([]);
 
   const dispatch = useDispatch();
-  const boxAdd = useSelector<IState, IPerson[]>(
+  const boxAddPersons = useSelector<IState, IPerson[]>(
     state => state.listPersons?.persons,
+  );
+  const boxAddLocations = useSelector<IState, ILocation[]>(
+    state => state.listLocations?.locations,
   );
 
   const { loading, data } = useQuery(GET_PERSONS);
@@ -89,18 +101,6 @@ function Home() {
     [dispatch, listPersons],
   );
 
-  const handleIsSelectedLocation = useCallback(
-    (location: Location) => {
-      if (location.isSelected === false) {
-        const newArraLocations = listLocations.map(item =>
-          item.id === location.id ? { ...item, isSelected: true } : item,
-        );
-        setListLocations(newArraLocations);
-      }
-    },
-    [listLocations],
-  );
-
   const handleRemoveList = useCallback(
     (person: Person) => {
       const newArrayPersons = listPersons.map(item =>
@@ -117,16 +117,56 @@ function Home() {
     [dispatch, listPersons],
   );
 
+  const handleIsSelectedLocation = useCallback(
+    (location: Location) => {
+      if (location.isSelected === false) {
+        const newArrayLocations = listLocations.map(item =>
+          item.id === location.id ? { ...item, isSelected: true } : item,
+        );
+        setListLocations(newArrayLocations);
+        const locationIsSelectedForRedux = newArrayLocations.find(
+          personLocation => personLocation.id === location.id,
+        );
+        if (locationIsSelectedForRedux) {
+          dispatch(addLocationToCreateEpisode(locationIsSelectedForRedux));
+        }
+      }
+    },
+    [dispatch, listLocations],
+  );
+
+  const handleRemoveListLocation = useCallback(
+    (location: Location) => {
+      const newArrayLocations = listLocations.map(item =>
+        item.id === location.id ? { ...item, isSelected: false } : item,
+      );
+      setListLocations(newArrayLocations);
+      const locationIsSelectedForRedux = newArrayLocations.find(
+        locationSearch => locationSearch.id === location.id,
+      );
+      if (locationIsSelectedForRedux !== undefined) {
+        dispatch(removeLocationToCreateEpisode(locationIsSelectedForRedux));
+      }
+    },
+    [dispatch, listLocations],
+  );
+
   function handleCreateEpisode() {
-    const listEpisodes = localStorage.getItem('rickandmorty:storage');
-    if (listEpisodes) {
-      const episodes = JSON.parse(listEpisodes);
-      episodes.push(boxAdd);
-      localStorage.setItem('rickandmorty:storage', JSON.stringify(episodes));
+    if (boxAddPersons?.length <= 0 || boxAddLocations?.length <= 0) {
+      alert('Adicione um personagem e uma localização!');
     } else {
-      const episodes = [];
-      episodes.push(boxAdd);
-      localStorage.setItem('rickandmorty:storage', JSON.stringify(episodes));
+      const listEpisodes = localStorage.getItem('rickandmorty:storage');
+      if (listEpisodes) {
+        const episodes = JSON.parse(listEpisodes);
+        episodes.push([boxAddPersons, boxAddLocations]);
+        localStorage.setItem('rickandmorty:storage', JSON.stringify(episodes));
+        history.push('/my-episodes');
+      } else {
+        const episodes = [];
+        episodes.push([boxAddPersons, boxAddLocations]);
+        localStorage.setItem('rickandmorty:storage', JSON.stringify(episodes));
+        history.push('/my-episodes');
+      }
     }
   }
 
@@ -163,11 +203,17 @@ function Home() {
         </section>
       </div>
       <div className={styles.listCreateEpisode}>
-        <div className={boxAdd.length > 0 ? styles.boxAdd : styles.boxAddFlex}>
-          {boxAdd.length > 0 ? (
+        <div
+          className={
+            boxAddPersons.length > 0 || boxAddLocations.length > 0
+              ? styles.boxAdd
+              : styles.boxAddFlex
+          }
+        >
+          {boxAddPersons.length > 0 || boxAddLocations.length > 0 ? (
             <>
-              {boxAdd?.map(person => (
-                <div className={styles.cardAdd} key={person.id}>
+              {boxAddPersons?.map(person => (
+                <div className={styles.cardAddPerson} key={person.id}>
                   <button
                     type="button"
                     onClick={() => handleRemoveList(person)}
@@ -177,6 +223,19 @@ function Home() {
                   <img src={person.image} alt={person.name} />
                 </div>
               ))}
+              <>
+                {boxAddLocations?.map(location => (
+                  <div className={styles.cardAddPerson} key={location.id}>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveListLocation(location)}
+                    >
+                      x
+                    </button>
+                    <img src={skyImage} alt={location.name} />
+                  </div>
+                ))}
+              </>
             </>
           ) : (
             <>

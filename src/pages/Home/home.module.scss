@@ -162,7 +162,47 @@
   }
 }
 
-.cardAdd {
+.cardAddPerson {
+  // border: 1px solid #dedede;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s;
+
+  img{
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 4px;
+  }
+
+  button {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px;
+    height: 25px;
+    top: -10px;
+    right: -10px;
+    border-radius: 50%;
+    border: none;
+    background: #dedede;
+    outline: none;
+    transition: all 0.2s;
+
+    &:hover{
+      background: #ef9a9a;
+      color: #fff;
+      transform: scale(1.1);
+    }
+  }
+}
+
+.cardAddLocation {
   // border: 1px solid #dedede;
   display: flex;
   align-items: center;

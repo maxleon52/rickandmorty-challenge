@@ -7,11 +7,6 @@ export interface IPerson {
   isSelected: boolean;
 }
 
-// export interface IEpisodeItem {
-//   persons: IPerson[];
-// }
-
 export interface IEpisodeState {
-  // items: IPerson[];
   persons: IPerson[];
 }
