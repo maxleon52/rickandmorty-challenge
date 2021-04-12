@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { Button } from 'antd';
@@ -7,7 +7,6 @@ import banner from '../../assets/images/banner.png';
 import styles from './header.module.scss';
 
 function Header() {
-  const [page, setPage] = useState('home');
   const url = useLocation();
   const rota = url.pathname;
 
@@ -16,18 +15,12 @@ function Header() {
       <img src={banner} alt="banner" height="100px" />
       <div className={styles.buttons}>
         <Link to="/">
-          <Button
-            type={rota === '/' ? 'primary' : 'ghost'}
-            onClick={() => setPage('home')}
-          >
+          <Button type={rota === '/' ? 'primary' : 'ghost'}>
             Criar epísodios
           </Button>
         </Link>
         <Link to="/my-episodes">
-          <Button
-            type={rota === '/my-episodes' ? 'primary' : 'ghost'}
-            onClick={() => setPage('myEpisodes')}
-          >
+          <Button type={rota === '/my-episodes' ? 'primary' : 'ghost'}>
             Meus epísodios
           </Button>
         </Link>

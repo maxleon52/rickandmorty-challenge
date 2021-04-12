@@ -1,3 +1,59 @@
 .container{
   // border: 2px solid red;
+  height: calc(100vh - 220px);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 33px;
+}
+
+.card {
+  // border: 1px solid blue;
+  display: flex;
+  flex-direction: column;
+  width: 273px;
+  height: 250px;
+  border-radius: 4px;
+  -webkit-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);
+}
+
+.cardListPersons {
+  // border: 1px solid;
+  flex:1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-content: flex-start;
+  gap: 5px;
+  padding: 5px;
+  overflow-y: scroll;
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  img {
+    border-radius: 4px;
+    width: 60px;
+    height: 60px;
+  }
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 0;
+  background: #4390FF;
+
+  h6 {
+  color: #fff;
+  font-weight: 400;
+  font-size: 14px;
+  margin: 0;
+  }
 }

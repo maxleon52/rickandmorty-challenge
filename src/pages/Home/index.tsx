@@ -1,5 +1,4 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable no-restricted-syntax */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
@@ -155,100 +154,127 @@ function Home() {
     if (boxAddPersons?.length <= 0 || boxAddLocations?.length <= 0) {
       alert('Adicione um personagem e uma localização!');
     } else {
-      const listEpisodes = localStorage.getItem('rickandmorty:storage');
-      if (listEpisodes) {
-        const episodes = JSON.parse(listEpisodes);
-        episodes.push([boxAddPersons, boxAddLocations]);
-        localStorage.setItem('rickandmorty:storage', JSON.stringify(episodes));
+      const episodesStoraged = localStorage.getItem('rickandmorty:storage');
+
+      const episodesImage = boxAddPersons.map(item => item.image);
+
+      if (episodesStoraged) {
+        const episodesParsed = JSON.parse(episodesStoraged);
+
+        episodesParsed.push({
+          episodes: episodesImage,
+        });
+
+        localStorage.setItem(
+          'rickandmorty:storage',
+          JSON.stringify(episodesParsed),
+        );
         history.push('/my-episodes');
       } else {
         const episodes = [];
-        episodes.push([boxAddPersons, boxAddLocations]);
+
+        episodes.push({
+          episodes: episodesImage,
+        });
+
         localStorage.setItem('rickandmorty:storage', JSON.stringify(episodes));
         history.push('/my-episodes');
       }
     }
   }
 
-  if (loading && loadingLocations) {
-    <h1>Carregando...</h1>;
-  }
-
   return (
-    <div className={styles.container}>
-      <div className={styles.listPersonsLocations}>
-        <section>
-          {listPersons.map(person => (
-            <PersonCard
-              key={person.id}
-              name={person.name}
-              gender={person.gender}
-              image={person.image}
-              species={person.species}
-              isSelected={person.isSelected}
-              onClick={() => handleIsSelected(person)}
-            />
-          ))}
-        </section>
-        <section>
-          {listLocations.map(location => (
-            <LocationCard
-              key={location.id}
-              name={location.name}
-              dimension={location.dimension}
-              isSelected={location.isSelected}
-              onClick={() => handleIsSelectedLocation(location)}
-            />
-          ))}
-        </section>
-      </div>
-      <div className={styles.listCreateEpisode}>
+    <>
+      {loading || loadingLocations ? (
         <div
-          className={
-            boxAddPersons.length > 0 || boxAddLocations.length > 0
-              ? styles.boxAdd
-              : styles.boxAddFlex
-          }
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: 'calc(100vh - 220px)',
+          }}
         >
-          {boxAddPersons.length > 0 || boxAddLocations.length > 0 ? (
-            <>
-              {boxAddPersons?.map(person => (
-                <div className={styles.cardAddPerson} key={person.id}>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveList(person)}
-                  >
-                    x
-                  </button>
-                  <img src={person.image} alt={person.name} />
-                </div>
-              ))}
-              <>
-                {boxAddLocations?.map(location => (
-                  <div className={styles.cardAddPerson} key={location.id}>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveListLocation(location)}
-                    >
-                      x
-                    </button>
-                    <img src={skyImage} alt={location.name} />
-                  </div>
-                ))}
-              </>
-            </>
-          ) : (
-            <>
-              <img src={sadImage} alt="icone de carinha triste" />
-              <p>Você ainda não adicionou nada.</p>
-            </>
-          )}
+          <h1>Carregando...</h1>
         </div>
-        <footer className={styles.footer}>
-          <Button onClick={() => handleCreateEpisode()}>Criar epísodio</Button>
-        </footer>
-      </div>
-    </div>
+      ) : (
+        <div className={styles.container}>
+          <div className={styles.listPersonsLocations}>
+            <section>
+              {listPersons.map(person => (
+                <PersonCard
+                  key={person.id}
+                  name={person.name}
+                  gender={person.gender}
+                  image={person.image}
+                  species={person.species}
+                  isSelected={person.isSelected}
+                  onClick={() => handleIsSelected(person)}
+                />
+              ))}
+            </section>
+            <section>
+              {listLocations.map(location => (
+                <LocationCard
+                  key={location.id}
+                  name={location.name}
+                  dimension={location.dimension}
+                  isSelected={location.isSelected}
+                  onClick={() => handleIsSelectedLocation(location)}
+                />
+              ))}
+            </section>
+          </div>
+          <div className={styles.listCreateEpisode}>
+            <div
+              className={
+                boxAddPersons.length > 0 || boxAddLocations.length > 0
+                  ? styles.boxAdd
+                  : styles.boxAddFlex
+              }
+            >
+              {boxAddPersons.length > 0 || boxAddLocations.length > 0 ? (
+                <>
+                  {boxAddPersons?.map(person => (
+                    <div className={styles.cardAddPerson} key={person.id}>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveList(person)}
+                      >
+                        x
+                      </button>
+                      <img src={person.image} alt={person.name} />
+                    </div>
+                  ))}
+                  <>
+                    {boxAddLocations?.map(location => (
+                      <div className={styles.cardAddPerson} key={location.id}>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveListLocation(location)}
+                        >
+                          x
+                        </button>
+                        <img src={skyImage} alt={location.name} />
+                      </div>
+                    ))}
+                  </>
+                </>
+              ) : (
+                <>
+                  <img src={sadImage} alt="icone de carinha triste" />
+                  <p>Você ainda não adicionou nada.</p>
+                </>
+              )}
+            </div>
+            <footer className={styles.footer}>
+              <Button onClick={() => handleCreateEpisode()}>
+                Criar epísodio
+              </Button>
+            </footer>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
