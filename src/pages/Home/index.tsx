@@ -3,12 +3,22 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { Button } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+
 import styles from './home.module.scss';
 
 import sadImage from '../../assets/icons/sad.svg';
 import { GET_PERSONS, GET_LOCATIONS } from './querys';
 import PersonCard from './components/PersonCard';
 import LocationCard from './components/LocationCard';
+
+import {
+  addPersonToCreateEpisode,
+  removePersonToCreateEpisode,
+} from '../../store/modules/addEpisode/actions';
+
+import { IState } from '../../store';
+import { IPerson } from '../../store/modules/addEpisode/types';
 
 interface Location {
   id: string;
@@ -24,19 +34,20 @@ interface Person {
   image: string;
   isSelected: boolean;
 }
-const listAdds = true;
 
 function Home() {
   const [listPersons, setListPersons] = useState<Person[]>([]);
   const [listLocations, setListLocations] = useState<Location[]>([]);
+
+  const dispatch = useDispatch();
+  const boxAdd = useSelector<IState, IPerson[]>(
+    state => state.listPersons?.persons,
+  );
+
   const { loading, data } = useQuery(GET_PERSONS);
   const { loading: loadingLocations, data: dataLocations } = useQuery(
     GET_LOCATIONS,
   );
-
-  if (loading && loadingLocations) {
-    <h1>Carregando...</h1>;
-  }
 
   useEffect(() => {
     if (data) {
@@ -62,29 +73,25 @@ function Home() {
 
   const handleIsSelected = useCallback(
     (person: Person) => {
-      if (person.isSelected === true) {
-        const newArraPersons = listPersons.map(item =>
-          item.id === person.id ? { ...item, isSelected: false } : item,
-        );
-        setListPersons(newArraPersons);
-      } else {
-        const newArraPersons = listPersons.map(item =>
+      if (person.isSelected === false) {
+        const newArrayPersons = listPersons.map(item =>
           item.id === person.id ? { ...item, isSelected: true } : item,
         );
-        setListPersons(newArraPersons);
+        setListPersons(newArrayPersons);
+        const personIsSelectedForRedux = newArrayPersons.find(
+          personSearch => personSearch.id === person.id,
+        );
+        if (personIsSelectedForRedux) {
+          dispatch(addPersonToCreateEpisode(personIsSelectedForRedux));
+        }
       }
     },
-    [listPersons],
+    [dispatch, listPersons],
   );
 
   const handleIsSelectedLocation = useCallback(
     (location: Location) => {
-      if (location.isSelected === true) {
-        const newArraLocations = listLocations.map(item =>
-          item.id === location.id ? { ...item, isSelected: false } : item,
-        );
-        setListLocations(newArraLocations);
-      } else {
+      if (location.isSelected === false) {
         const newArraLocations = listLocations.map(item =>
           item.id === location.id ? { ...item, isSelected: true } : item,
         );
@@ -94,19 +101,28 @@ function Home() {
     [listLocations],
   );
 
-  // function handleIsSelectedLocation(location: Location) {
-  //   if (location.isSelected === true) {
-  //     const newArraLocations = listLocations.map(item =>
-  //       item.id === location.id ? { ...item, isSelected: false } : item,
-  //     );
-  //     setListLocations(newArraLocations);
-  //   } else {
-  //     const newArraLocations = listLocations.map(item =>
-  //       item.id === location.id ? { ...item, isSelected: true } : item,
-  //     );
-  //     setListLocations(newArraLocations);
-  //   }
-  // }
+  const handleRemoveList = useCallback(
+    (person: Person) => {
+      const newArrayPersons = listPersons.map(item =>
+        item.id === person.id ? { ...item, isSelected: false } : item,
+      );
+      setListPersons(newArrayPersons);
+      const personIsSelectedForRedux = newArrayPersons.find(
+        personSearch => personSearch.id === person.id,
+      );
+      if (personIsSelectedForRedux !== undefined) {
+        dispatch(removePersonToCreateEpisode(personIsSelectedForRedux));
+      }
+    },
+    [dispatch, listPersons],
+  );
+  if (loading && loadingLocations) {
+    <h1>Carregando...</h1>;
+  }
+
+  useEffect(() => {
+    console.log('Redux boxAdd aqui: ', boxAdd);
+  }, [boxAdd]);
 
   return (
     <div className={styles.container}>
@@ -127,6 +143,7 @@ function Home() {
         <section>
           {listLocations.map(location => (
             <LocationCard
+              key={location.id}
               name={location.name}
               dimension={location.dimension}
               isSelected={location.isSelected}
@@ -136,12 +153,21 @@ function Home() {
         </section>
       </div>
       <div className={styles.listCreateEpisode}>
-        <div className={styles.boxAdd}>
-          {listAdds ? (
-            <div className={styles.cardAdd}>
-              <button type="button">x</button>
-              persons
-            </div>
+        <div className={boxAdd.length > 0 ? styles.boxAdd : styles.boxAddFlex}>
+          {boxAdd.length > 0 ? (
+            <>
+              {boxAdd?.map(person => (
+                <div className={styles.cardAdd} key={person.id}>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveList(person)}
+                  >
+                    x
+                  </button>
+                  <img src={person.image} alt={person.name} />
+                </div>
+              ))}
+            </>
           ) : (
             <>
               <img src={sadImage} alt="icone de carinha triste" />
