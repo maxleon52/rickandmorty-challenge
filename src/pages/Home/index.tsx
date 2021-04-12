@@ -116,13 +116,23 @@ function Home() {
     },
     [dispatch, listPersons],
   );
+
+  function handleCreateEpisode() {
+    const listEpisodes = localStorage.getItem('rickandmorty:storage');
+    if (listEpisodes) {
+      const episodes = JSON.parse(listEpisodes);
+      episodes.push(boxAdd);
+      localStorage.setItem('rickandmorty:storage', JSON.stringify(episodes));
+    } else {
+      const episodes = [];
+      episodes.push(boxAdd);
+      localStorage.setItem('rickandmorty:storage', JSON.stringify(episodes));
+    }
+  }
+
   if (loading && loadingLocations) {
     <h1>Carregando...</h1>;
   }
-
-  useEffect(() => {
-    console.log('Redux boxAdd aqui: ', boxAdd);
-  }, [boxAdd]);
 
   return (
     <div className={styles.container}>
@@ -176,7 +186,7 @@ function Home() {
           )}
         </div>
         <footer className={styles.footer}>
-          <Button>Criar epísodio</Button>
+          <Button onClick={() => handleCreateEpisode()}>Criar epísodio</Button>
         </footer>
       </div>
     </div>
